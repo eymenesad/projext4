@@ -85,10 +85,11 @@ def main(input_file_path='input.txt'):
                 if record:
                     with open('output.txt', 'a') as output_file:
                         output_file.write(' '.join(record) + '\n')
+                else:
+                    with open('output.txt', 'a') as output_file:
+                        output_file.write('Record not found\n')
 
 if __name__ == '__main__':
     input_file_path = sys.argv[1] if len(sys.argv) > 1 else 'input.txt'
     main(input_file_path)
-
-
-
+    
