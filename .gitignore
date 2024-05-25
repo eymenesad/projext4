@@ -2,3 +2,5 @@
 input.txt
 output.txt
 log.csv
+*.csv
+*.txt
