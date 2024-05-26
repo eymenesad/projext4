@@ -7,12 +7,19 @@ class WesterosArchive:
     def __init__(self):
         self.types = {}
         self.page_size = 10  # Maximum number of records per page
+        self.max_pages_per_file = 100  # Maximum number of pages per file
+        self.max_type_length = 12  # Maximum length of type names
+        self.max_field_legth = 20  # Maximum length of field names
+        self.max_fields = 6  # Maximum number of fields a type can have
 
     def create_type(self, type_name, num_fields, primary_key_order, fields):
-        if len(type_name) > 12:
+        if len(type_name) > self.max_type_length:
             self.log_operation(f"create type {type_name} {num_fields} {primary_key_order} {' '.join(fields)}", 'failure')
             return
         if any(len(field.split()[0]) > 20 for field in fields):
+            self.log_operation(f"create type {type_name} {num_fields} {primary_key_order} {' '.join(fields)}", 'failure')
+            return
+        if len(fields) > self.max_fields:
             self.log_operation(f"create type {type_name} {num_fields} {primary_key_order} {' '.join(fields)}", 'failure')
             return
         if type_name in self.types:
