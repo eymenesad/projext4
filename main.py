@@ -35,57 +35,62 @@ class WesterosArchive:
             return
         primary_key_index = self.types[type_name]['primary_key_order']
         primary_key = values[primary_key_index]
-        records = self.read_records(type_name)
-        for record in records:
-            if record[primary_key_index] == primary_key:
-                self.log_operation(f"create record {type_name} {' '.join(values)}", 'failure')
-                return
-        records.append(values)
-        self.write_records(type_name, records)
+        all_records = []
+
+        found = False
+        for page in self.read_records(type_name):
+            for record in page:
+                if record[primary_key_index] == primary_key:
+                    self.log_operation(f"create record {type_name} {' '.join(values)}", 'failure')
+                    return
+            all_records.extend(page)
+
+        all_records.append(values)
+        self.write_records(type_name, all_records)
         self.log_operation(f"create record {type_name} {' '.join(values)}", 'success')
         print(f"Record created in {type_name}: {values}")
+
 
     def delete_record(self, type_name, primary_key):
         if type_name not in self.types:
             self.log_operation(f"delete record {type_name} {primary_key}", 'failure')
             return
         primary_key_index = self.types[type_name]['primary_key_order']
-        records = self.read_records(type_name)
-        for record in records:
-            if record[primary_key_index] == primary_key:
-                records.remove(record)
-                self.write_records(type_name, records)
-                self.log_operation(f"delete record {type_name} {primary_key}", 'success')
-                print(f"Record deleted from {type_name} with primary key: {primary_key}")
-                return
-        self.log_operation(f"delete record {type_name} {primary_key}", 'failure')
+        all_records = []
+
+        found = False
+        for page in self.read_records(type_name):
+            for record in page:
+                if record[primary_key_index] == primary_key:
+                    found = True
+                else:
+                    all_records.append(record)
+
+        if found:
+            self.write_records(type_name, all_records)
+            self.log_operation(f"delete record {type_name} {primary_key}", 'success')
+            print(f"Record deleted from {type_name} with primary key: {primary_key}")
+        else:
+            self.log_operation(f"delete record {type_name} {primary_key}", 'failure')
+
 
     def search_record(self, type_name, primary_key):
         if type_name not in self.types:
             self.log_operation(f"search record {type_name} {primary_key}", 'failure')
             return None
         primary_key_index = self.types[type_name]['primary_key_order']
+
         try:
             with open(f'{type_name}.csv', 'r', newline='') as type_file:
                 reader = csv.reader(type_file)
                 next(reader)  # Skip header
-                page = []
                 for row in reader:
                     if row[0].startswith('PAGE_HEADER'):
                         continue
-                    page.append(row)
-                    if len(page) == self.page_size:
-                        for record in page:
-                            if record[primary_key_index] == primary_key:
-                                self.log_operation(f"search record {type_name} {primary_key}", 'success')
-                                print(f"Record found in {type_name} with primary key: {primary_key}")
-                                return record
-                        page = []
-                for record in page:
-                    if record[primary_key_index] == primary_key:
+                    if row[primary_key_index] == primary_key:
                         self.log_operation(f"search record {type_name} {primary_key}", 'success')
                         print(f"Record found in {type_name} with primary key: {primary_key}")
-                        return record
+                        return row
         except FileNotFoundError:
             self.log_operation(f"search record {type_name} {primary_key}", 'failure')
             print(f"File for type {type_name} not found.")
@@ -108,11 +113,16 @@ class WesterosArchive:
                 reader = csv.reader(type_file)
                 next(reader)  # Skip header
                 for row in reader:
-                    if not row[0].startswith('PAGE_HEADER'):
-                        records.append(row)
+                    if row[0].startswith('PAGE_HEADER'):
+                        continue
+                    records.append(row)
+                    if len(records) == self.page_size:
+                        yield records
+                        records = []
+                if records:
+                    yield records
         except FileNotFoundError:
-            pass  # File will be created when the first record is added
-        return records
+            pass  
 
     def write_records(self, type_name, records):
         page_count = 1
