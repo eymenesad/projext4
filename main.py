@@ -144,6 +144,8 @@ class WesterosArchive:
 def main(input_file_path='input.txt'):
     archive = WesterosArchive()
     with open(input_file_path, 'r') as input_file:
+        with open('output.txt', 'w') as output_file:
+            output_file.write('')
         for line in input_file:
             parts = line.strip().split()
             operation = parts[0]
