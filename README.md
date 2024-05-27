@@ -2,16 +2,6 @@
 
 The Westeros Archive is a Python-based application designed to manage types and records in a CSV format. It supports creating new types, adding records, deleting records, and searching for records. This project is implemented with the goal of managing large datasets efficiently by utilizing pagination.
 
-## Table of Contents
-
-- [Features](#features)
-- [Usage](#usage)
-- [Class Structure](#class-structure)
-- [Functions](#functions)
-- [Installation](#installation)
-- [Running the Program](#running-the-program)
-- [Logging](#logging)
-
 ## Features
 
 1. **Create Type**: Define a new type with a specified number of fields and a primary key.
@@ -33,11 +23,11 @@ The input commands should be provided in a file named `input.txt`. Each line in 
 
 ### Example
 
-create type Person 3 1 Name Age City
-create record Person John 30 Winterfell
-create record Person Arya 18 Winterfell
-delete record Person Arya
-search record Person John
+- create type Person 3 1 Name Age City
+- create record Person John 30 Winterfell
+- create record Person Arya 18 Winterfell
+- delete record Person Arya
+- search record Person John
 
 
 ## Class Structure
@@ -87,7 +77,7 @@ cd <project_directory>
 1. Ensure your input commands are in a file named `input.txt` in the same directory as the script.
 2. Run the program:
 
-python westeros_archive.py [input_file_path]
+python3 archive.py [input_file_path]
 
 If no input file path is provided, it defaults to `input.txt`.
 
@@ -100,6 +90,3 @@ All operations are logged in a file named `log.txt` with the following format:
 
 The log file helps in tracking the success or failure of each operation along with the time of execution.
 
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
