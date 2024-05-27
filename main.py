@@ -92,12 +92,13 @@ class WesterosArchive:
             with open(f'{type_name}.csv', 'r', newline='') as type_file:
                 reader = csv.reader(type_file)
                 next(reader)  # Skip header
-                for row in reader:
-                    if row[0].startswith('PAGE_HEADER'):
-                        continue
-                    if row[primary_key_index] == primary_key:
-                        self.log_operation(f" search record {type_name} {primary_key}", ' success')
-                        return row
+                for page in self.read_records(type_name):
+                    for row in page:
+                        if row[0].startswith('PAGE_HEADER'):
+                            continue
+                        if row[primary_key_index] == primary_key:
+                            self.log_operation(f" search record {type_name} {primary_key}", ' success')
+                            return row
         except FileNotFoundError:
             self.log_operation(f" search record {type_name} {primary_key}", ' failure')  
             return None
