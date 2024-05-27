@@ -22,9 +22,6 @@ class WesterosArchive:
         if num_fields > self.max_fields:
             self.log_operation(f" create type {type_name} {num_fields} {primary_key_order + 1} {' '.join(fields)}", ' failure')
             return
-        if len(fields) > self.max_fields:
-            self.log_operation(f" create type {type_name} {num_fields} {primary_key_order} {' '.join(fields)}", ' failure')
-            return
         if type_name in self.types:
             self.log_operation(f" create type {type_name} {num_fields} {primary_key_order + 1} {' '.join(fields)}", ' failure')
             return
