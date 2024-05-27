@@ -12,7 +12,6 @@ class WesterosArchive:
         self.max_field_legth = 20  # Maximum length of field names
         self.max_fields = 6  # Maximum number of fields a type can have
         
-
     def create_type(self, type_name, num_fields, primary_key_order, fields):
         if len(type_name) > 12:
             self.log_operation(f" create type {type_name} {num_fields} {primary_key_order + 1} {' '.join(fields)}", ' failure')
@@ -22,6 +21,9 @@ class WesterosArchive:
             return
         if num_fields > self.max_fields:
             self.log_operation(f" create type {type_name} {num_fields} {primary_key_order + 1} {' '.join(fields)}", ' failure')
+            return
+        if len(fields) > self.max_fields:
+            self.log_operation(f"create type {type_name} {num_fields} {primary_key_order} {' '.join(fields)}", 'failure')
             return
         if type_name in self.types:
             self.log_operation(f" create type {type_name} {num_fields} {primary_key_order + 1} {' '.join(fields)}", ' failure')
